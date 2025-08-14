@@ -56,7 +56,7 @@ counters.MapGet("/lesserthan/{number}", (int number) =>
 //e.g.  with an Id=1  the Books counter Value should be increased from 5 to 6
 //return the counter you have increased
 
-counters.MapGet("/increment/{id}", (int id) =>
+counters.MapPost("/increment/{id}", (int id) =>
 {
     var counter = CounterHelper.Counters.Where(c => c.Id == id).FirstOrDefault();
 
@@ -71,7 +71,7 @@ counters.MapGet("/increment/{id}", (int id) =>
 //e.g.  with an Id=1  the Books counter Value should be decreased from 5 to 4
 //return the counter you have decreased
 
-counters.MapGet("/decrement/{id}", (int id) =>
+counters.MapPost("/decrement/{id}", (int id) =>
 {
     var counter = CounterHelper.Counters.Where(c => c.Id == id).FirstOrDefault();
 
