@@ -33,53 +33,103 @@ counters.MapGet("/", () =>
 
 
 //TODO: 2. write a method to return a single counter based on the id being passed in.  complete method below
-counters.MapGet("/{id}", (int id) =>
+counters.MapGet("/{id}", GetId);
+
+async Task<IResult> GetId(int id)
 {
-    return TypedResults.Ok(CounterHelper.Counters.Where(c => c.Id == id).First());
-});
+    var counter = CounterHelper.Counters.Where(c => c.Id == id).FirstOrDefault();
+
+    if (counter is null)
+        return TypedResults.NotFound();
+
+    return TypedResults.Ok(counter);
+}
 
 //TODO: 3.  write another method that returns counters that have a value greater than the {number} passed in.        
-counters.MapGet("/greaterthan/{number}", (int number) =>
+counters.MapGet("/greaterthan/{number}", GreaterThan);
+
+async Task<IResult> GreaterThan(int number)
 {
-    return TypedResults.Ok(CounterHelper.Counters.Where(c => c.Value > number).ToList());
-});
+    var result = CounterHelper.Counters.Where(c => c.Value > number).ToList();
+
+    if (result.Count == 0)
+        return TypedResults.NotFound();
+
+    return TypedResults.Ok(result);
+}
 
 ////TODO:4. write another method that returns counters that have a value less than the {number} passed in.
 
-counters.MapGet("/lesserthan/{number}", (int number) =>
+counters.MapGet("/lesserthan/{number}", LesserThan);
+
+async Task<IResult> LesserThan(int number)
 {
-    return TypedResults.Ok(CounterHelper.Counters.Where(c => c.Value < number).ToList());
-});
+    var result = CounterHelper.Counters.Where(c => c.Value < number).ToList();
+
+    if (result.Count == 0)
+        return TypedResults.NotFound();
+
+    return TypedResults.Ok(result);
+}
 
 //Extension #1
 //TODO:  1. Write a controller method that increments the Value property of a counter of any given Id.
 //e.g.  with an Id=1  the Books counter Value should be increased from 5 to 6
 //return the counter you have increased
 
+/*
 counters.MapPost("/increment/{id}", (int id) =>
 {
     var counter = CounterHelper.Counters.Where(c => c.Id == id).FirstOrDefault();
+
+    if (counter is null)
+    {
+        return TypedResults.NotFound();
+    }
 
     if (counter is not null)
         counter.Value += 1;
 
     return TypedResults.Ok(counter);
 });
+*/
+
+counters.MapPost("/increment/{id}", IncrementId);
+
+static async Task<IResult> IncrementId(int id)
+{
+    var counter = CounterHelper.Counters.Where(c => c.Id == id).FirstOrDefault();
+
+    if (counter is null)
+    {
+        return TypedResults.NotFound();
+    }
+    
+    counter.Value += 1;
+
+    return TypedResults.Ok(counter);
+}
 
 //Extension #2
 //TODO: 2. Write a controller method that decrements the Value property of a counter of any given Id.
 //e.g.  with an Id=1  the Books counter Value should be decreased from 5 to 4
 //return the counter you have decreased
 
-counters.MapPost("/decrement/{id}", (int id) =>
+counters.MapPost("/decrement/{id}", DecrementId);
+
+static async Task<IResult> DecrementId(int id)
 {
     var counter = CounterHelper.Counters.Where(c => c.Id == id).FirstOrDefault();
 
-    if (counter is not null)
-        counter.Value -= 1;
+    if (counter is null)
+    {
+        return TypedResults.NotFound();
+    }
+
+    counter.Value -= 1;
 
     return TypedResults.Ok(counter);
-});
+}
 
 //Super Optional Extension #1 - Refactor the code!
 // - move the EndPoints into their own class and ensure they are mapped correctly
